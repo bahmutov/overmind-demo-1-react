@@ -11,30 +11,30 @@ context('Overmind', () => {
       // cy.get('.post').should('have.length', 10)
     })
 
-    it('shows 10 posts and can change to 50', function () {
-      cy.get('.post').should('have.length', 10)
-      getOvermind()
-        .its('state.showCount')
-        .should('equal', '10')
+    // it('shows 10 posts and can change to 50', function () {
+    //   cy.get('.post').should('have.length', 10)
+    //   getOvermind()
+    //     .its('state.showCount')
+    //     .should('equal', '10')
 
-      cy.get('#select-count').select('50')
-      cy.get('.post').should('have.length', 50)
-      getOvermind()
-        .its('state.showCount')
-        .should('equal', '50')
+    //   cy.get('#select-count').select('50')
+    //   cy.get('.post').should('have.length', 50)
+    //   getOvermind()
+    //     .its('state.showCount')
+    //     .should('equal', '50')
 
-      // drive app via overmind action
-    })
+    //   // drive app via overmind action
+    // })
 
-    it('drives app via overmind action', () => {
-      getOvermind()
-        .its('actions')
-        .invoke('changeShowCount', { target: { value: 20 } })
-      cy.get('.post').should('have.length', 20)
-    })
+    // it('drives app via overmind action', () => {
+    //   getOvermind()
+    //     .its('actions')
+    //     .invoke('changeShowCount', { target: { value: 20 } })
+    //   cy.get('.post').should('have.length', 20)
+    // })
 
     it('signals "initialized"', () => {
-      getOvermind().then(overmind => {
+      cy.overmind().then(overmind => {
         return cy
           .wrap(overmind.initialized)
           .then(cy.spy().as('overmind initialized'))
@@ -43,6 +43,8 @@ context('Overmind', () => {
       cy.get('@overmind initialized').should('have.been.calledOnce')
     })
 
+    // sets the spy TOO LATE
+    // because the app makes the request at the very start
     it.skip('calls request effect', () => {
       cy.get('.post').should('have.length', 10)
       getOvermind()
@@ -54,6 +56,7 @@ context('Overmind', () => {
     })
   })
 
+  // also TOO LATE
   it.skip('emits on request', () => {
     cy.on('overmind:effects:request', cy.spy().as('overmind request'))
     cy.visit('/')
@@ -62,7 +65,7 @@ context('Overmind', () => {
       .and('have.been.calledWith', 'https://jsonplaceholder.typicode.com/posts')
   })
 
-  it('can spy on request method in effects', () => {
+  it.only('can spy on request method in effects', () => {
     cy.setOvermind = overmind => {
       console.log('setting overmind', overmind)
       cy.spy(overmind.effects, 'request').as('request')
@@ -76,7 +79,7 @@ context('Overmind', () => {
       )
   })
 
-  it.only('can stub the request method in effects', () => {
+  it('can stub the request method in effects', () => {
     cy.fixture('posts').then(posts => {
       cy.setOvermind = overmind => {
         cy.stub(overmind.effects, 'request')
