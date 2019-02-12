@@ -35,9 +35,10 @@ const overmind = new Overmind({
 if (window.Cypress) {
   window.overmind = overmind
   console.log('set window.overmind', +new Date())
-  window.Cypress.cy.setOvermind(overmind)
-} else {
-  overmind.eventHub.on('effect', console.log)
+  if (window.Cypress.cy.setOvermind) {
+    window.Cypress.cy.setOvermind(overmind)
+  }
+  // overmind.eventHub.on('effect', console.log)
 }
 
 export const connect = createConnect(overmind)
