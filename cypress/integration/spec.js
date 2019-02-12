@@ -62,6 +62,38 @@ context('Overmind', () => {
       .and('have.been.calledWith', 'https://jsonplaceholder.typicode.com/posts')
   })
 
+  it('can spy on request method in effects', () => {
+    cy.setOvermind = overmind => {
+      console.log('setting overmind', overmind)
+      cy.spy(overmind.effects, 'request').as('request')
+    }
+    cy.visit('/')
+    cy.get('@request')
+      .should('have.been.calledOnce')
+      .and(
+        'have.been.be.calledWithExactly',
+        'https://jsonplaceholder.typicode.com/posts'
+      )
+  })
+
+  it.only('can stub the request method in effects', () => {
+    cy.fixture('posts').then(posts => {
+      cy.setOvermind = overmind => {
+        cy.stub(overmind.effects, 'request')
+          .as('request')
+          .resolves(posts)
+      }
+    })
+    cy.visit('/')
+    cy.get('@request')
+      .should('have.been.calledOnce')
+      .and(
+        'have.been.be.calledWithExactly',
+        'https://jsonplaceholder.typicode.com/posts'
+      )
+    cy.get('li.post').should('have.length', 2)
+  })
+
   it('emits all requests', () => {
     // cy.on('overmind:effects:request', cy.spy().as('overmind request'))
     const spy = cy.spy().as('effect')
