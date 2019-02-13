@@ -87,5 +87,41 @@ describe('Overmind effects', () => {
         )
       cy.get('li.post').should('have.length', 2)
     })
+
+    it('delay the response to effect', () => {
+      // there are two posts in the fixture
+      cy.fixture('posts').then(posts => {
+        // our app will notify us synchronously during load
+        // so we can set up spies and stubs
+        Cypress.setOvermind = overmind => {
+          // when effect.request happens
+          // we are going to delay by 2 seconds and respond with our data
+          cy.stub(overmind.effects, 'request')
+            .as('request')
+            .resolves(Cypress.Promise.delay(2000, posts))
+        }
+      })
+      // let's roll
+      cy.visit('/')
+      // page makes the request right away, nice
+      cy.get('@request')
+        .should('have.been.calledOnce')
+        .and(
+          'have.been.be.calledWithExactly',
+          'https://jsonplaceholder.typicode.com/posts'
+        )
+      // while request is in transit, loading state
+      cy.contains('Loading')
+      cy.overmind()
+        .its('state.isLoadingPosts')
+        .should('be.true')
+
+      // load should finish eventually
+      cy.overmind()
+        .its('state.isLoadingPosts')
+        .should('be.false')
+      cy.contains('Loading').should('not.exist')
+      cy.get('li.post').should('have.length', 2)
+    })
   })
 })
