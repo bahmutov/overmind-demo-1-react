@@ -22,10 +22,6 @@ const overmind = new Overmind({
   },
   effects: {
     request: async url => {
-      console.log('effects.request', +new Date())
-      // if (window.Cypress) {
-      //   window.Cypress.cy.emit('overmind:effects:request', url)
-      // }
       const response = await fetch(url)
       return response.json()
     }
@@ -34,11 +30,9 @@ const overmind = new Overmind({
 
 if (window.Cypress) {
   window.overmind = overmind
-  console.log('set window.overmind', +new Date())
   if (window.Cypress.cy.setOvermind) {
     window.Cypress.cy.setOvermind(overmind)
   }
-  // overmind.eventHub.on('effect', console.log)
 }
 
 export const connect = createConnect(overmind)

@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 /// <reference path="./custom-commands.d.ts" />
-context('Overmind', () => {
+context('Overmind state', () => {
   beforeEach(() => {
     cy.visit('/')
   })
