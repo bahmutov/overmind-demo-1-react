@@ -32,9 +32,33 @@ describe('Overmind effects', () => {
   })
 
   context('can be set up synchronously', () => {
+    it('emits all requests', () => {
+      const spy = cy.spy().as('effect')
+
+      Cypress.setOvermind = overmind => {
+        overmind.eventHub.on('effect', effect => {
+          // we get two events for each effect call
+          // first at the start with "isPending: true"
+          // and the second after the effect finishes
+          if (!effect.isPending) {
+            console.log(
+              'effect "%s %s" has finished',
+              effect.method,
+              effect.actionName,
+              effect.result
+            )
+            spy(effect)
+          }
+        })
+        // safe to delete now (optional)
+        delete Cypress.setOvermind
+      }
+      cy.visit('/')
+      cy.get('@effect').should('have.been.calledOnce')
+    })
+
     it('can spy on request method in effects', () => {
-      cy.setOvermind = overmind => {
-        console.log('setting overmind', overmind)
+      Cypress.setOvermind = overmind => {
         cy.spy(overmind.effects, 'request').as('request')
       }
       cy.visit('/')
@@ -48,7 +72,7 @@ describe('Overmind effects', () => {
 
     it('can stub the request method in effects', () => {
       cy.fixture('posts').then(posts => {
-        cy.setOvermind = overmind => {
+        Cypress.setOvermind = overmind => {
           cy.stub(overmind.effects, 'request')
             .as('request')
             .resolves(posts)
@@ -62,30 +86,6 @@ describe('Overmind effects', () => {
           'https://jsonplaceholder.typicode.com/posts'
         )
       cy.get('li.post').should('have.length', 2)
-    })
-
-    it('emits all requests', () => {
-      // cy.on('overmind:effects:request', cy.spy().as('overmind request'))
-      const spy = cy.spy().as('effect')
-
-      cy.setOvermind = overmind => {
-        console.log('setting overmind', overmind)
-        // overmind.eventHub.on('effect', cy.spy().as('effect'))
-        overmind.eventHub.on('effect', effect => {
-          if (!effect.isPending) {
-            // cy.spy().as('effect')
-            console.log(
-              'effect "%s %s" has finished',
-              effect.method,
-              effect.actionName,
-              effect.result
-            )
-            spy(effect)
-          }
-        })
-      }
-      cy.visit('/')
-      cy.get('@effect').should('have.been.calledOnce')
     })
   })
 })

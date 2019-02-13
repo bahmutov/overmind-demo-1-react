@@ -30,8 +30,8 @@ const overmind = new Overmind({
 
 if (window.Cypress) {
   window.overmind = overmind
-  if (window.Cypress.cy.setOvermind) {
-    window.Cypress.cy.setOvermind(overmind)
+  if (window.Cypress.setOvermind) {
+    window.Cypress.setOvermind(overmind)
   }
 }
 
