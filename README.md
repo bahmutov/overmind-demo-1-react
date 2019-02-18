@@ -21,6 +21,7 @@ npx cypress open
 - [get-state-spec.js](cypress/integration/get-state-spec.js) makes assertions against data in the state object
 - [action-spec.js](cypress/integration/action-spec.js) drives app by invoking actions
 - [control-effects-spec.js](cypress/integration/control-effects-spec.js) spies and stubs external effects from the application, like making `fetch` to the outside API
+- [visit-overmind-spec.js](cypress/integration/visit-overmind-spec.js) captures `window.overmind` without need to call `setOvermind` from the application code
 
 [renovate-badge]: https://img.shields.io/badge/renovate-app-blue.svg
 [renovate-app]: https://renovateapp.com/
