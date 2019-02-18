@@ -7,8 +7,7 @@ Cypress.Commands.add('onOvermind', set => {
   // window.overmind = overmind
   // during initialization
 
-  // avoid multiple registrations using "once"
-  Cypress.once('window:before:load', win => {
+  cy.on('window:before:load', win => {
     console.log('prepare overmind setter')
     Object.defineProperty(win, 'overmind', { set })
   })
