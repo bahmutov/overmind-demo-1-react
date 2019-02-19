@@ -5,7 +5,7 @@ context('Overmind state', () => {
     cy.visit('/')
   })
 
-  it('checks values in state object', function () {
+  it('changes values in state object', function () {
     cy.get('.post').should('have.length', 10)
     cy.overmind()
       .its('state.showCount')
